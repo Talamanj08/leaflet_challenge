@@ -4,7 +4,7 @@ const earthquakeURL = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary
 // Making map centered to SF
 const map = L.map('map').setView([37.7749, -122.4194], 5);
 
-// Create base layer  
+// Create base layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
@@ -23,7 +23,6 @@ function getMarkerColor(depth) {
     else if (depth <= 90) return 'red';
     else return 'darkred';
 }
-
 // Create a legend
 const legend = L.control({ position: 'bottomright' });
 
@@ -49,11 +48,9 @@ legend.onAdd = function (map) {
 };
 
 legend.addTo(map);
-
-
-// Get earthquake data and add markers w/popups
-    .then(response => response.json())
-    .then(data => {
+// Get earthquake data using D3
+d3.json(earthquakeURL)
+    .then(function (data) {
         L.geoJSON(data.features, {
             pointToLayer: function (feature, latlng) {
                 const magnitude = feature.properties.mag;
@@ -73,4 +70,7 @@ legend.addTo(map);
                 );
             }
         }).addTo(map);
+    })
+    .catch(function (error) {
+        console.error('Error fetching GeoJSON data:', error);
     });
